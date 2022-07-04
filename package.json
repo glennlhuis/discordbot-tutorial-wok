@@ -12,6 +12,8 @@
   "license": "ISC",
   "dependencies": {
     "discord.js": "^13.8.1",
-    "dotenv": "^16.0.1"
+    "dotenv": "^16.0.1",
+    "mongoose": "^6.4.2",
+    "wokcommands": "^1.5.3"
   }
 }
