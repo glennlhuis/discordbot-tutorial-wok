@@ -1,58 +1,44 @@
 import DiscordJS, { Intents } from 'discord.js'
+import WOKCommands from 'wokcommands'
+import path from 'path'
+import mongoose from 'mongoose'
 import dotenv from 'dotenv'
+import testSchema from './test-schema'
 dotenv.config()
 
 const client = new DiscordJS.Client({
     intents: [
         Intents.FLAGS.GUILDS,
-        Intents.FLAGS.GUILD_MESSAGES
+        Intents.FLAGS.GUILD_MEMBERS,
+        Intents.FLAGS.GUILD_MESSAGES,
+        Intents.FLAGS.GUILD_VOICE_STATES
     ]
 })
 
-client.on('ready', ()=>{
+client.on('ready', async ()=>{
+
+    // Legacy type of connecting to Mongoose Db
+    await mongoose.connect(process.env.MONGO_URI || '',
+    {
+        keepAlive: true
+    })
+
     console.log('The Bot is ready')
 
-    // Guild
-    const guildId = "993006483816058982"
-    const guild = client.guilds.cache.get(guildId)
-    let commands
-
-    if(guild){
-        commands = guild.commands
-    }
-    else{
-        commands = client.application?.commands
-    }
-
-    commands?.create({
-        name: 'ping',
-        description: 'Replies with pong'
-
+    new WOKCommands(client,{
+        commandsDir: path.join(__dirname, 'commands'),
+        typeScript: true,
+        // mongoUri: process.env.MONGO_URI || '',
+        // dbOptions: {
+        //     keepAlive: true,
+        // }
     })
-    // Global
+
+    setTimeout(async() => {
+        await new testSchema({
+            message: 'Hello World!',
+        }).save()
+    }, 1000)
 })
-
-client.on('interactionCreate',async (interaction) => {
-    if(!interaction.isCommand()){
-        return
-    }
-
-    const {commandName, options} = interaction
-
-    if(commandName === 'ping'){
-        interaction.reply({
-            content: 'pong',
-            ephemeral: true,
-        })
-    }
-})
-
-// client.on('messageCreate', (message) => {
-//     if(message.content === 'ping'){
-//         message.reply({
-//             content: 'pong',
-//         })
-//     }
-// })
 
 client.login(process.env.TOKEN)
