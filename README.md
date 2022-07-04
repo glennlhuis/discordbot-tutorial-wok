@@ -1,2 +1,3 @@
-# freak-radio
-A Discord music bot (for now) exclusive for Little Freaks Server
+# Making a Discord Bot
+
+Enhanced my knowledge in making a Discord bot using Worn of Keys tutorial.
